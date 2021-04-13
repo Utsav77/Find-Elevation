@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<body class="container">
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <title>Elevation</title>
+  </head>
+
+  <form>
+    <h5>Enter your address:</h5>
+    <input type="text" name="address" id="address" required>
+    <button type="submit" style="color: royalblue;">Submit</button>
+  </form>
+
+  <p id="display" style="color: red;"></p>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.3/dist/jquery.validate.js"></script>
+  <script>
+    //api key provided by mapquest
+    const ApiKey = "tToYHRAdr6XznzrRPGzSat7ZrRyE4Szu";
+    $("form").submit(function(e){
+      e.preventDefault();
+      const address = $("#address").val();
+      const url = `http://open.mapquestapi.com/geocoding/v1/address?key=${ApiKey}&location=${address}`
+      $.get(url, function(data, status) {
+        if(data) {
+          //this returns the latitude and longitude of a location 
+          //$("#display").text(data);
+          console.log(data);
+          const { lat, lng } = data.results[0].locations[0].latLng;
+          console.log(lat,lng);
+          const elevationUrl = `http://open.mapquestapi.com/elevation/v1/profile?key=${ApiKey}&shapeFormat=raw&unit=f&latLngCollection=${lat},${lng}`;
+            $.get(elevationUrl, function(data, status){
+            if(data) {
+              const {distance, height} = data.elevationProfile[0];
+              $("#display").text(`Elevation is : ${height}`);
+            }
+          });
+        }
+      });
+    });
+
+  </script>
+</body>
+</html>
